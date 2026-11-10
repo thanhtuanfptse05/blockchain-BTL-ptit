@@ -55,8 +55,15 @@ CUSTOM_CSS = """
         text-transform: uppercase;
         letter-spacing: 0.06em;
         color: #64748B;
-        margin-top: 1.25rem;
+        margin-top: 1.15rem;
         margin-bottom: 0.35rem;
+    }
+    section[data-testid="stSidebar"] div.stButton > button {
+        min-height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
     }
 
     /* Header Container */
@@ -124,21 +131,9 @@ CUSTOM_CSS = """
         font-size: 0.78rem;
         font-weight: 500;
     }
-    .sc-01 {
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
-        color: #065F46;
-    }
-    .sc-02 {
-        background: #FFFBEB;
-        border: 1px solid #FDE68A;
-        color: #92400E;
-    }
-    .sc-03 {
-        background: #FEF2F2;
-        border: 1px solid #FECACA;
-        color: #991B1B;
-    }
+    .sc-01 { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
+    .sc-02 { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+    .sc-03 { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
 
     /* KPI Cards */
     .metric-card {
@@ -177,18 +172,9 @@ CUSTOM_CSS = """
         padding: 0.12rem 0.45rem;
         border-radius: 4px;
     }
-    .delta-down {
-        background: #FEE2E2;
-        color: #991B1B;
-    }
-    .delta-up {
-        background: #D1FAE5;
-        color: #065F46;
-    }
-    .delta-flat {
-        background: #F1F5F9;
-        color: #475569;
-    }
+    .delta-down { background: #FEE2E2; color: #991B1B; }
+    .delta-up { background: #D1FAE5; color: #065F46; }
+    .delta-flat { background: #F1F5F9; color: #475569; }
 
     /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
@@ -207,9 +193,7 @@ CUSTOM_CSS = """
         border: none !important;
         background-color: transparent !important;
     }
-    .stTabs [data-baseweb="tab"]:hover {
-        color: #0F172A !important;
-    }
+    .stTabs [data-baseweb="tab"]:hover { color: #0F172A !important; }
     .stTabs [aria-selected="true"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -243,14 +227,55 @@ CUSTOM_CSS = """
         box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25) !important;
     }
 
-    /* Sliders */
-    div[data-testid="stSlider"] label {
-        font-size: 0.8rem !important;
-        font-weight: 600 !important;
-        color: #334155 !important;
+    /* Methodology Flow & Formula Cards */
+    .flow-container { display: flex; flex-direction: column; gap: 0.4rem; }
+    .flow-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+    .flow-card-highlight { background: #FEF2F2; border-color: #FECACA; }
+    .flow-step { font-size: 0.68rem; font-weight: 700; color: #2563EB; letter-spacing: 0.04em; }
+    .flow-title { font-size: 0.88rem; font-weight: 600; color: #0F172A; margin-top: 0.15rem; }
+    .flow-desc { font-size: 0.78rem; color: #475569; margin-top: 0.25rem; line-height: 1.45; }
+    .flow-arrow { text-align: center; color: #94A3B8; font-size: 0.95rem; line-height: 1; }
+
+    .formula-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 0.9rem 1.15rem;
+        margin-bottom: 0.85rem;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+    .formula-badge { font-size: 0.68rem; font-weight: 700; color: #2563EB; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .formula-title { font-size: 0.9rem; font-weight: 700; color: #0F172A; margin-bottom: 0.4rem; }
+    .formula-desc { font-size: 0.78rem; color: #64748B; margin-top: 0.45rem; line-height: 1.4; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+    .scenario-box { border-radius: 8px; padding: 0.85rem 1rem; }
+    .box-sc01 { background: #ECFDF5; border: 1px solid #A7F3D0; }
+    .box-sc02 { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .box-sc03 { background: #FEF2F2; border: 1px solid #FECACA; }
+    .scenario-tag { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+    .tag-sc01 { color: #065F46; }
+    .tag-sc02 { color: #92400E; }
+    .tag-sc03 { color: #991B1B; }
+    .scenario-name { font-size: 0.88rem; font-weight: 700; color: #0F172A; margin-bottom: 0.25rem; }
+    .scenario-body { font-size: 0.78rem; color: #475569; line-height: 1.4; }
+
+    .limitations-container {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-left: 4px solid #2563EB;
+        border-radius: 8px;
+        padding: 0.9rem 1.2rem;
     }
 
-    /* Scrollbars */
+    /* Sliders & Scrollbars */
+    div[data-testid="stSlider"] label { font-size: 0.8rem !important; font-weight: 600 !important; color: #334155 !important; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #F8FAFC; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }

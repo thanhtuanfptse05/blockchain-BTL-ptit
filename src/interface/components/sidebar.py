@@ -28,9 +28,9 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
     """
     st.sidebar.markdown(
         """
-        <div style="margin-bottom:0.75rem;">
-            <div style="font-size:1.1rem; font-weight:700; color:#0F172A;">Tham số mô phỏng</div>
-            <div style="font-size:0.8rem; color:#64748B; margin-top:0.2rem;">Khảo sát tác động lây lan qua các khối</div>
+        <div style="margin-bottom:0.85rem; padding-bottom:0.5rem; border-bottom:1px solid #E2E8F0;">
+            <div style="font-size:1.15rem; font-weight:700; color:#0F172A;">Tham số mô phỏng</div>
+            <div style="font-size:0.8rem; color:#64748B; margin-top:0.15rem;">Khảo sát tác động lây lan qua các khối</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -51,7 +51,7 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
         st.session_state["param_seed"] = DEFAULT_SEED
 
     # Top Action Buttons
-    col_run, col_reset = st.sidebar.columns([1.4, 1])
+    col_run, col_reset = st.sidebar.columns([1.3, 1])
     with col_run:
         run_top = st.button("Chạy mô phỏng", type="primary", use_container_width=True, key="btn_run_top")
     with col_reset:
@@ -64,17 +64,17 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
             st.session_state["param_seed"] = DEFAULT_SEED
             st.rerun()
 
-    # Preset Scenarios
+    # Preset Scenarios with equal-length labels to prevent awkward text wrapping
     st.sidebar.markdown("<div class='sidebar-section-title'>Kịch bản mẫu</div>", unsafe_allow_html=True)
     col_p1, col_p2 = st.sidebar.columns(2)
     with col_p1:
-        if st.button("Căng thẳng cao", use_container_width=True, key="preset_crisis", help="Shock 30%, Pool hẹp"):
+        if st.button("Căng thẳng", use_container_width=True, key="preset_crisis", help="Shock 30%, Pool A $80M, Pool B $30M"):
             st.session_state["param_shock_pct"] = 30.0
             st.session_state["param_pool_a_tvl"] = 80_000_000.0
             st.session_state["param_pool_b_tvl"] = 30_000_000.0
             st.rerun()
     with col_p2:
-        if st.button("Thanh khoản sâu", use_container_width=True, key="preset_resilient", help="Shock 5%, Pool dày"):
+        if st.button("Ổn định", use_container_width=True, key="preset_resilient", help="Shock 5%, Pool A $300M, Pool B $150M"):
             st.session_state["param_shock_pct"] = 5.0
             st.session_state["param_pool_a_tvl"] = 300_000_000.0
             st.session_state["param_pool_b_tvl"] = 150_000_000.0
@@ -96,28 +96,32 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
 
     st.sidebar.markdown("<div class='sidebar-section-title'>2. Thanh khoản các pool AMM</div>", unsafe_allow_html=True)
 
-    curr_a = float(st.session_state["param_pool_a_tvl"])
-    pool_a_tvl = st.sidebar.slider(
-        label=f"Pool A (ETH/USDC): ${curr_a/1e6:.0f}M",
-        min_value=10_000_000.0,
-        max_value=500_000_000.0,
-        value=curr_a,
-        step=5_000_000.0,
+    curr_a_m = int(round(float(st.session_state["param_pool_a_tvl"]) / 1_000_000.0))
+    pool_a_m = st.sidebar.slider(
+        label="Pool A TVL — ETH/USDC",
+        min_value=10,
+        max_value=500,
+        value=curr_a_m,
+        step=5,
+        format="$%dM",
         help="Độ sâu thanh khoản của AMM Pool A (ETH/USDC).",
-        key="slider_pool_a_tvl",
+        key="slider_pool_a_m",
     )
+    pool_a_tvl = float(pool_a_m * 1_000_000.0)
     st.session_state["param_pool_a_tvl"] = pool_a_tvl
 
-    curr_b = float(st.session_state["param_pool_b_tvl"])
-    pool_b_tvl = st.sidebar.slider(
-        label=f"Pool B (stETH/ETH): ${curr_b/1e6:.0f}M",
-        min_value=5_000_000.0,
-        max_value=200_000_000.0,
-        value=curr_b,
-        step=2_500_000.0,
+    curr_b_m = int(round(float(st.session_state["param_pool_b_tvl"]) / 1_000_000.0))
+    pool_b_m = st.sidebar.slider(
+        label="Pool B TVL — stETH/ETH",
+        min_value=5,
+        max_value=200,
+        value=curr_b_m,
+        step=5,
+        format="$%dM",
         help="Độ sâu thanh khoản của AMM Pool B (stETH/ETH).",
-        key="slider_pool_b_tvl",
+        key="slider_pool_b_m",
     )
+    pool_b_tvl = float(pool_b_m * 1_000_000.0)
     st.session_state["param_pool_b_tvl"] = pool_b_tvl
 
     st.sidebar.markdown("<div class='sidebar-section-title'>3. Cấu hình mô phỏng</div>", unsafe_allow_html=True)
@@ -155,6 +159,7 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
     )
     st.session_state["param_seed"] = seed
 
+    st.markdown("<div style='margin-bottom:0.5rem;'></div>", unsafe_allow_html=True)
     run_bottom = st.sidebar.button("Chạy mô phỏng (Run)", type="primary", use_container_width=True, key="btn_run_bottom")
     run_clicked = run_top or run_bottom
 
