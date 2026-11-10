@@ -214,17 +214,22 @@ def generate_comparison_table(
     return rows
 
 
-def _render_item(col, label: str, value: str, delta: Optional[str] = None, delta_unit: str = "so với SC02") -> None:
-    """Helper to render a clean typographic metric item matching the demo UI."""
+def _render_card(col, label: str, value: str, delta: Optional[str], is_bad_metric: bool = False) -> None:
+    """Helper to render a clean, human-designed KPI card in a Streamlit column."""
     delta_html = ""
     if delta is not None:
-        arrow = "↓" if delta.startswith("-") else "↑"
-        delta_html = f'<div class="metric-item-delta"><span>{arrow}</span> <span>{delta} {delta_unit}</span></div>'
+        if delta in ("$0.00", "+0", "+0.00%", "0.00%", "0"):
+            cls = "delta-flat"
+        elif is_bad_metric:
+            cls = "delta-down" if (delta.startswith("+") or not delta.startswith("-")) else "delta-up"
+        else:
+            cls = "delta-down" if delta.startswith("-") else "delta-up"
+        delta_html = f'<div class="metric-delta {cls}">{delta} vs SC02</div>'
 
     html = f"""
-    <div class="metric-item">
-        <div class="metric-item-label">{label}</div>
-        <div class="metric-item-value">{value}</div>
+    <div class="metric-card">
+        <div class="metric-label">{label}</div>
+        <div class="metric-value">{value}</div>
         {delta_html}
     </div>
     """
@@ -232,7 +237,7 @@ def _render_item(col, label: str, value: str, delta: Optional[str] = None, delta
 
 
 def render_kpi_metrics(summary: KPISummary) -> None:
-    """Render the 6 core KPI metric items matching the demo layout.
+    """Render the 6 core KPI metric cards with clean financial layout in Streamlit UI.
 
     # Implements FR-07, FR-07-06, NFR-06, SRS §11, §14.3
 
@@ -243,27 +248,23 @@ def render_kpi_metrics(summary: KPISummary) -> None:
 
     c1, c2, c3, c4, c5, c6 = st.columns(6)
 
-    # 1. Final ETH price
-    d_eth = f"{summary.delta_eth_price_usd:+,.0f}" if summary.delta_eth_price_usd is not None else None
-    _render_item(c1, "Giá ETH cuối (SC03)", f"{summary.final_eth_price_usd:,.0f}", d_eth)
+    d_eth = format_usd(summary.delta_eth_price_usd) if summary.delta_eth_price_usd is not None else None
+    _render_card(c1, "Giá ETH cuối", format_usd(summary.final_eth_price_usd), d_eth)
 
-    # 2. Final stETH price
-    d_steth = f"{summary.delta_steth_price_usd:+,.0f}" if summary.delta_steth_price_usd is not None else None
-    _render_item(c2, "Giá stETH cuối (SC03)", f"{summary.final_steth_price_usd:,.0f}", d_steth)
+    d_steth = format_usd(summary.delta_steth_price_usd) if summary.delta_steth_price_usd is not None else None
+    _render_card(c2, "Giá stETH cuối", format_usd(summary.final_steth_price_usd), d_steth)
 
-    # 3. Discount stETH
-    d_disc = f"{summary.delta_steth_discount_pct:+.1f} điểm %" if summary.delta_steth_discount_pct is not None else None
-    _render_item(c3, "Discount stETH cuối", f"{summary.final_steth_discount_pct:.1f}%", d_disc)
+    d_disc = f"{summary.delta_steth_discount_pct:+.2f}%" if summary.delta_steth_discount_pct is not None else None
+    _render_card(c3, "Chiết khấu stETH", format_pct(summary.final_steth_discount_pct), d_disc, is_bad_metric=True)
 
-    # 4. Liquidated borrowers
     d_ag = f"{summary.delta_liquidated_agents:+d}" if summary.delta_liquidated_agents is not None else None
-    val_ag = f"{summary.liquidated_agents_unique}/{summary.total_agents}"
-    _render_item(c4, "Vị thế stETH bị thanh lý", val_ag, d_ag)
+    val_ag = f"{summary.liquidated_agents_unique}/{summary.total_agents} ({summary.liquidated_agents_ratio_pct:.0f}%)"
+    _render_card(c4, "Vị thế thanh lý", val_ag, d_ag, is_bad_metric=True)
 
-    # 5. CAR
-    _render_item(c5, "CAR", f"{summary.liquidated_agents_ratio_pct:.0f}%", None)
+    d_ev = f"{summary.delta_liquidation_events:+d}" if summary.delta_liquidation_events is not None else None
+    _render_card(c5, "Số lần thanh lý", str(summary.liquidation_events_total), d_ev, is_bad_metric=True)
 
-    # 6. Bad Debt
-    _render_item(c6, "Nợ xấu (SC03)", f"{summary.bad_debt_usd:,.0f} USD", None)
+    d_bd = format_usd(summary.delta_bad_debt_usd) if summary.delta_bad_debt_usd is not None else None
+    _render_card(c6, "Nợ xấu phát sinh", format_usd(summary.bad_debt_usd), d_bd, is_bad_metric=True)
 
 

@@ -1,185 +1,260 @@
-"""Theme and styling matching the clean academic demo interface.
+"""Theme, CSS styling, and visual design system for the Streamlit Dashboard.
 
-Clean light mode design with coral/crimson accents, airy typography,
-and high-contrast charts.
+Clean, human-centered Light Mode design inspired by Stripe, Linear, and Notion.
 
 # Implements NFR-06, SRS §12
 """
 
 import streamlit as st
 
-COLOR_PRIMARY = "#D9383A"  # Coral red accent
-COLOR_SC01 = "#4B5563"     # Charcoal/slate gray
-COLOR_SC02 = "#1D70B8"     # Deep blue
-COLOR_SC03 = "#D9383A"     # Crimson/coral red
-COLOR_ETH = "#1D70B8"      # Blue
-COLOR_STETH = "#D9383A"    # Red
+BG_LIGHT = "#FFFFFF"
+BG_SURFACE = "#F8FAFC"
+BORDER_COLOR = "#E2E8F0"
+TEXT_PRIMARY = "#0F172A"
+TEXT_SECONDARY = "#475569"
+COLOR_PRIMARY = "#2563EB"
+COLOR_SC01 = "#059669"
+COLOR_SC02 = "#D97706"
+COLOR_SC03 = "#DC2626"
 
 CUSTOM_CSS = """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    code, pre {
+        font-family: 'JetBrains Mono', monospace !important;
     }
     
-    /* Global Page Layout */
+    /* Layout & Surface */
     .stApp {
         background-color: #FFFFFF !important;
-        color: #111827 !important;
+        color: #0F172A !important;
     }
     .block-container {
-        padding-top: 1.8rem !important;
-        padding-bottom: 3.5rem !important;
-        max-width: 1400px !important;
+        padding-top: 1.5rem !important;
+        padding-bottom: 3rem !important;
+        max-width: 1360px !important;
     }
 
-    /* Sidebar Clean Styling */
+    /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #F9FAFB !important;
-        border-right: 1px solid #E5E7EB !important;
+        background-color: #F8FAFC !important;
+        border-right: 1px solid #E2E8F0 !important;
     }
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 1.8rem !important;
+        padding-top: 1.5rem !important;
         padding-left: 1.25rem !important;
         padding-right: 1.25rem !important;
     }
-    .sidebar-title {
-        font-size: 1.12rem;
+    .sidebar-section-title {
+        font-size: 0.72rem;
         font-weight: 700;
-        color: #111827;
-        margin-bottom: 1.25rem;
-    }
-    .sidebar-fixed-note {
-        font-size: 0.86rem;
-        color: #374151;
-        line-height: 1.55;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid #E5E7EB;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748B;
+        margin-top: 1.25rem;
+        margin-bottom: 0.35rem;
     }
 
-    /* Main Page Header */
-    .demo-header-title {
-        font-size: 2.15rem;
-        font-weight: 800;
-        color: #111827;
-        letter-spacing: -0.025em;
-        line-height: 1.2;
+    /* Header Container */
+    .header-container {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 1.4rem 1.8rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .header-badge {
+        display: inline-block;
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        color: #1D4ED8;
+        padding: 0.2rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
         margin-bottom: 0.5rem;
     }
-    .demo-header-subtitle {
-        font-size: 0.85rem;
-        color: #6B7280;
-        line-height: 1.5;
-        margin-bottom: 1.8rem;
-    }
-
-    /* Typographic Metrics Grid */
-    .metrics-row {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1.25rem;
-        margin-bottom: 1.8rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #F3F4F6;
-    }
-    .metric-item {
-        display: flex;
-        flex-direction: column;
-    }
-    .metric-item-label {
-        font-size: 0.82rem;
-        color: #4B5563;
-        margin-bottom: 0.25rem;
-        white-space: nowrap;
-    }
-    .metric-item-value {
-        font-size: 1.95rem;
+    .header-title {
+        font-size: 1.75rem;
         font-weight: 700;
-        color: #111827;
-        line-height: 1.15;
+        color: #0F172A;
         letter-spacing: -0.02em;
+        margin: 0 0 0.35rem 0;
+        line-height: 1.25;
     }
-    .metric-item-delta {
+    .header-subtitle {
+        color: #475569;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+    .header-disclaimer {
+        display: inline-block;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        color: #64748B;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
         font-size: 0.78rem;
-        color: #D9383A;
-        margin-top: 0.35rem;
         font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.2rem;
+        margin-top: 0.85rem;
     }
 
-    /* Clean Underline Tabs (Matching Demo) */
+    /* Scenario Pills */
+    .scenarios-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+    .scenario-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+    .sc-01 {
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        color: #065F46;
+    }
+    .sc-02 {
+        background: #FFFBEB;
+        border: 1px solid #FDE68A;
+        color: #92400E;
+    }
+    .sc-03 {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #991B1B;
+    }
+
+    /* KPI Cards */
+    .metric-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 1rem 1.15rem;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .metric-card:hover {
+        border-color: #CBD5E1;
+        box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+    }
+    .metric-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.35rem;
+    }
+    .metric-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0F172A;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+    .metric-delta {
+        margin-top: 0.4rem;
+        font-size: 0.74rem;
+        font-weight: 600;
+        display: inline-block;
+        padding: 0.12rem 0.45rem;
+        border-radius: 4px;
+    }
+    .delta-down {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+    .delta-up {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+    .delta-flat {
+        background: #F1F5F9;
+        color: #475569;
+    }
+
+    /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 22px;
-        background-color: transparent !important;
-        padding: 0 !important;
-        border-bottom: 1px solid #E5E7EB !important;
-        margin-bottom: 1.25rem !important;
+        gap: 6px;
+        background-color: #F1F5F9 !important;
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid #E2E8F0;
     }
     .stTabs [data-baseweb="tab"] {
-        padding: 8px 2px 10px 2px !important;
-        color: #4B5563 !important;
+        padding: 7px 16px !important;
+        border-radius: 6px !important;
+        color: #64748B !important;
         font-weight: 500 !important;
-        font-size: 0.92rem !important;
+        font-size: 0.88rem !important;
         border: none !important;
         background-color: transparent !important;
-        border-bottom: 2px solid transparent !important;
-        border-radius: 0 !important;
-        transition: color 0.15s ease !important;
     }
     .stTabs [data-baseweb="tab"]:hover {
-        color: #111827 !important;
+        color: #0F172A !important;
     }
     .stTabs [aria-selected="true"] {
-        background-color: transparent !important;
-        color: #D9383A !important;
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
         font-weight: 600 !important;
-        border-bottom: 2px solid #D9383A !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
     }
 
-    /* Slider Styling */
-    div[data-testid="stSlider"] label {
-        font-size: 0.82rem !important;
-        color: #374151 !important;
-        font-weight: 500 !important;
-    }
-    div[data-testid="stSlider"] div[data-baseweb="slider"] {
-        margin-top: 0.15rem !important;
-    }
-
-    /* Action Buttons */
+    /* Buttons */
     div.stButton > button {
         border-radius: 6px !important;
         font-weight: 500 !important;
         font-size: 0.88rem !important;
-        padding: 0.45rem 0.9rem !important;
-        border: 1px solid #D1D5DB !important;
+        padding: 0.5rem 1rem !important;
+        border: 1px solid #CBD5E1 !important;
         background: #FFFFFF !important;
-        color: #374151 !important;
+        color: #1E293B !important;
+        transition: all 0.15s ease !important;
     }
     div.stButton > button:hover {
-        background: #F3F4F6 !important;
-        border-color: #9CA3AF !important;
+        background: #F8FAFC !important;
+        border-color: #94A3B8 !important;
     }
     div.stButton > button[kind="primary"] {
-        background: #D9383A !important;
+        background: #2563EB !important;
         color: #FFFFFF !important;
-        border: 1px solid #B91C1C !important;
+        border: 1px solid #1D4ED8 !important;
+        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.15) !important;
     }
     div.stButton > button[kind="primary"]:hover {
-        background: #B91C1C !important;
+        background: #1D4ED8 !important;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25) !important;
     }
 
-    /* Legend and Notes under Charts */
-    .chart-caption-note {
-        font-size: 0.82rem;
-        color: #6B7280;
-        line-height: 1.5;
-        margin-top: 0.75rem;
+    /* Sliders */
+    div[data-testid="stSlider"] label {
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        color: #334155 !important;
     }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F8FAFC; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 </style>
 """
 
