@@ -182,3 +182,4 @@
 | **9** | Kiểm thử Tự động & Chất lượng Mã nguồn | Thành viên 1 | 0.5 phút |
 | **10** | Giới hạn, Hướng phát triển & Kết luận | Cả 2 thành viên | 0.5 phút |
 | **Tổng** | **Toàn bộ bài báo cáo** | **Cả 2 thành viên** | **9.0 phút** |
+

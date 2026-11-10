@@ -51,8 +51,8 @@ def build() -> None:
             background: #FFFFFF;
         }}
         .spinner {{
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border: 3px solid #E2E8F0;
             border-top: 3px solid #2563EB;
             border-radius: 50%;
@@ -68,8 +68,8 @@ def build() -> None:
 <body>
     <div id="loading-screen">
         <div class="spinner"></div>
-        <div style="font-size: 1.1rem; font-weight: 600;">Đang khởi chạy DeFi Liquidation Cascade Simulator...</div>
-        <div style="font-size: 0.85rem; color: #64748B; margin-top: 6px;">Đang tải môi trường Python WebAssembly trong trình duyệt...</div>
+        <div style="font-size: 1.15rem; font-weight: 600;">Đang khởi chạy DeFi Liquidation Cascade Simulator...</div>
+        <div style="font-size: 0.88rem; color: #64748B; margin-top: 6px;">Đang tải môi trường Python WebAssembly trong trình duyệt...</div>
     </div>
     <div id="root"></div>
 
@@ -97,8 +97,12 @@ def build() -> None:
 </body>
 </html>
 """
+    # Write to root index.html so default GitHub Pages branch deployment picks it up immediately
+    Path("index.html").write_text(html, encoding="utf-8")
     (dist_dir / "index.html").write_text(html, encoding="utf-8")
-    print(f"Build complete: dist/index.html generated with {len(files)} Python files embedded.")
+    Path(".nojekyll").write_text("", encoding="utf-8")
+    (dist_dir / ".nojekyll").write_text("", encoding="utf-8")
+    print(f"Build complete: index.html and dist/index.html generated with {len(files)} Python files embedded.")
 
 
 if __name__ == "__main__":
