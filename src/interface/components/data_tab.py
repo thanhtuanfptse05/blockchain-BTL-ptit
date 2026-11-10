@@ -34,7 +34,7 @@ def render_data_tab(results: Optional[Dict[str, SimulationResult]]) -> None:
     st.caption("12 trường dữ liệu chuẩn theo từng khối của 3 kịch bản SC01, SC02, SC03.")
 
     df_blocks = block_results_to_dataframe(results)
-    st.dataframe(df_blocks, width="stretch", height=320)
+    st.dataframe(df_blocks, use_container_width=True, height=320)
 
     csv_blocks = export_block_results_to_csv(results)
     st.download_button(
@@ -54,7 +54,7 @@ def render_data_tab(results: Optional[Dict[str, SimulationResult]]) -> None:
     if len(df_events) == 0:
         st.info("Không có sự kiện thanh lý nào được ghi nhận.")
     else:
-        st.dataframe(df_events, width="stretch", height=280)
+        st.dataframe(df_events, use_container_width=True, height=280)
 
     csv_events = export_liquidation_events_to_csv(results)
     st.download_button(

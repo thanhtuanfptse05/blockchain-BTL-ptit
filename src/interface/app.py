@@ -150,7 +150,7 @@ def main() -> None:
             results["SC03"],
         )
         df_comp = pd.DataFrame(comp_table)
-        st.dataframe(df_comp, width="stretch")
+        st.dataframe(df_comp, use_container_width=True)
 
     with tab3:
         render_data_tab(results)
