@@ -206,3 +206,4 @@ Với cấu hình mặc định (Shock 15%, Pool A \$150M, Pool B \$80M, 100 Bor
 2. Adams, H., Zinsmeister, N., & Robinson, D. (2020). *Uniswap v2 Core Whitepaper*.
 3. Lido DAO. (2021). *Lido Liquid Staking on Ethereum Architecture*.
 4. Gudgeon, L., et al. (2020). *DeFi Protocols for Loanable Funds: Interest Rates, Liquidation, and Market Efficiency*. ACM Conference.
+

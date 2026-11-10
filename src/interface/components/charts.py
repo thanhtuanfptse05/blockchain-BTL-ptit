@@ -10,12 +10,12 @@ from typing import List, Dict, Any
 import plotly.graph_objects as go
 from src.domain.block_result import BlockResult
 
-# Color palette with clear distinction and high contrast
-COLOR_SC01 = "#059669"  # Emerald green (Baseline / Stable)
-COLOR_SC02 = "#D97706"  # Amber orange (Direct shock)
-COLOR_SC03 = "#DC2626"  # Crimson red (Cascade contagion)
-COLOR_ETH = "#2563EB"   # Royal blue
-COLOR_STETH = "#7C3AED" # Violet purple
+# Color palette with clear distinction, warm financial aesthetic, and high contrast
+COLOR_SC01 = "#059669"   # Emerald green (Baseline / Stable)
+COLOR_SC02 = "#D97706"   # Amber orange (Direct shock)
+COLOR_SC03 = "#DC2626"   # Crimson red (Cascade contagion)
+COLOR_ETH = "#2563EB"    # Classic Royal Blue (ETH Collateral)
+COLOR_STETH = "#F59E0B"  # Warm Amber Gold (stETH Collateral)
 
 
 def _add_shock_line(fig: go.Figure) -> None:
@@ -24,42 +24,32 @@ def _add_shock_line(fig: go.Figure) -> None:
     # Implements FR-08-03
     """
     fig.add_vline(
-        x=1,
-        line_width=1.5,
-        line_dash="dash",
-        line_color="#D97706",
-        annotation_text="Cú sốc giá (Block 1)",
-        annotation_position="top right",
-        annotation_font_size=11,
-        annotation_font_color="#B45309",
+        x=1, line_width=1.5, line_dash="dash", line_color="#D97706",
+        annotation_text=" Cú sốc B1 ", annotation_position="bottom right",
+        annotation_font_size=10, annotation_font_color="#92400E",
+        annotation=dict(bgcolor="rgba(254, 243, 199, 0.9)", bordercolor="#FDE68A", borderwidth=1, borderpad=3, yshift=12),
     )
 
 
 def _apply_chart_theme(fig: go.Figure, title: str, y_title: str, **kwargs: Any) -> None:
     """Apply clean light mode layout styling to a Plotly figure."""
-    yaxis_dict = dict(showgrid=True, gridcolor="#F1F5F9", zerolinecolor="#E2E8F0")
+    yaxis_dict = dict(showgrid=True, gridcolor="#F1F5F9", zerolinecolor="#E2E8F0", tickfont=dict(size=11, color="#64748B"))
     if "yaxis" in kwargs:
         yaxis_dict.update(kwargs.pop("yaxis"))
 
     fig.update_layout(
-        title=dict(text=title, font=dict(size=13, color="#0F172A", family="Plus Jakarta Sans, sans-serif")),
-        xaxis_title="Block",
-        yaxis_title=y_title,
+        title=dict(text=title, font=dict(size=13, color="#0F172A", family="Plus Jakarta Sans, sans-serif"), x=0.01, xanchor="left", y=0.96),
+        xaxis_title=dict(text="Block", font=dict(size=11, color="#64748B")),
+        yaxis_title=dict(text=y_title, font=dict(size=11, color="#64748B")),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="#FFFFFF",
         font=dict(family="Plus Jakarta Sans, sans-serif", color="#475569"),
         hovermode="x unified",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1,
-            font=dict(color="#334155", size=11),
-        ),
-        xaxis=dict(dtick=1, showgrid=True, gridcolor="#F1F5F9", zerolinecolor="#E2E8F0"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.04, xanchor="right", x=1.0, font=dict(color="#334155", size=10.5)),
+        xaxis=dict(showgrid=True, gridcolor="#F1F5F9", zerolinecolor="#E2E8F0", tickmode="auto", nticks=10, tickangle=0, tickformat="d", tickfont=dict(size=11, color="#64748B")),
         yaxis=yaxis_dict,
-        margin=dict(l=50, r=30, t=65, b=45),
+        margin=dict(l=55, r=25, t=65, b=45),
+        modebar=dict(bgcolor="rgba(0,0,0,0)", color="#94A3B8"),
         **kwargs,
     )
 
@@ -117,7 +107,7 @@ def create_eth_price_chart(
         fig=fig,
         title="Biến động giá ETH theo Block",
         y_title="ETH Price (USD)",
-        yaxis=dict(tickprefix="$", showgrid=True, gridcolor="#F1F5F9"),
+        yaxis=dict(tickprefix="$", tickformat=",d", nticks=6, showgrid=True, gridcolor="#F1F5F9"),
     )
     return fig
 
@@ -171,7 +161,7 @@ def create_steth_discount_chart(
         fig=fig,
         title="Tỉ lệ chiết khấu stETH so với ETH",
         y_title="stETH Discount vs ETH (%)",
-        yaxis=dict(ticksuffix="%", showgrid=True, gridcolor="#F1F5F9"),
+        yaxis=dict(ticksuffix="%", tickformat=".0f", nticks=6, showgrid=True, gridcolor="#F1F5F9"),
     )
     return fig
 
@@ -192,14 +182,20 @@ def create_liquidation_breakdown_chart(sc03_blocks: List[BlockResult]) -> go.Fig
             x=blocks,
             y=eth_liqs,
             name="ETH Liquidations",
-            marker_color=COLOR_ETH,
+            marker=dict(
+                color=COLOR_ETH,
+                line=dict(color="#1D4ED8", width=0.8),
+            ),
             hovertemplate="Block %{x}: %{y} ETH events<extra></extra>",
         ))
         fig.add_trace(go.Bar(
             x=blocks,
             y=steth_liqs,
             name="stETH Liquidations",
-            marker_color=COLOR_STETH,
+            marker=dict(
+                color=COLOR_STETH,
+                line=dict(color="#D97706", width=0.8),
+            ),
             hovertemplate="Block %{x}: %{y} stETH events<extra></extra>",
         ))
 
@@ -208,7 +204,7 @@ def create_liquidation_breakdown_chart(sc03_blocks: List[BlockResult]) -> go.Fig
         title="Phân bổ sự kiện thanh lý theo tài sản (SC03)",
         y_title="Số sự kiện thanh lý",
         barmode="stack",
-        yaxis=dict(rangemode="tozero", dtick=1, showgrid=True, gridcolor="#F1F5F9"),
+        yaxis=dict(rangemode="tozero", tickformat="d", nticks=6, showgrid=True, gridcolor="#F1F5F9"),
     )
     return fig
 
@@ -249,6 +245,6 @@ def create_cumulative_liquidated_agents_chart(
         fig=fig,
         title="Số lượng người vay bị thanh lý lũy kế",
         y_title="Số người vay bị thanh lý lũy kế",
-        yaxis=dict(rangemode="tozero", showgrid=True, gridcolor="#F1F5F9"),
+        yaxis=dict(rangemode="tozero", tickformat="d", nticks=6, showgrid=True, gridcolor="#F1F5F9"),
     )
     return fig

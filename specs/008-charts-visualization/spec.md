@@ -169,5 +169,7 @@ def create_cumulative_liquidated_agents_chart(
 
 - **SC-01**: Cả 4 hàm tạo biểu đồ đều có Unit Test kiểm tra tính hợp lệ của đối tượng `go.Figure` trả về (không văng exception với các tập dữ liệu biên: 0 event, max block = 1, shock = 0).
 - **SC-02**: Vạch chú thích shock tại block 1 xuất hiện chính xác trên biểu đồ giá và discount.
-- **SC-03**: Trục X và Y được định dạng đẹp mắt, không hiển thị số âm cho các đại lượng số học dương, trục X không chia số lẻ thập phân.
+- **SC-03**: Trục X và Y được định dạng đẹp mắt, không hiển thị số âm cho các đại lượng số học dương, trục X không chia số lẻ thập phân. Trục X hiển thị chữ số nằm ngang (`tickangle=0`), bước nhảy tự động cách đều (`nticks=10`), tuyệt đối không xoay dọc 90 độ gây đè chữ.
+- **SC-04 (Chống đè chữ & Chống chồng lấn Tick Trục Y)**: Biểu đồ cột thanh lý không được gán `dtick=1` trên trục Y làm hàng chục số dính chặt vào nhau; phải dùng auto-tick với `nticks=6` và `tickformat="d"`. Vạch chú thích cú sốc tại block 1 phải có badge nền tách biệt hoặc đặt ở góc dưới tránh đè lên đường cong dữ liệu và legend.
+- **SC-05 (Màu sắc biểu đồ cột thanh lý chuẩn mực tài chính)**: Biểu đồ cột thanh lý sử dụng bảng màu tương phản hài hòa, sang trọng (ETH: Deep Slate/Royal Blue, stETH: Warm Amber/Teal), cấm dùng màu tím điện tử chói gắt.
 
