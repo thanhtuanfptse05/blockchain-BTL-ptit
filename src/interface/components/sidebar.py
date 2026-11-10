@@ -1,7 +1,9 @@
 """Sidebar Component for Streamlit Dashboard.
 
-Provides interactive sliders for simulation parameters (P-01 to P-06)
-and Run/Reset buttons with clean, human-designed controls.
+Matches the clean academic demo UI layout:
+- Tham số thí nghiệm (Shock %, Pool A TVL, Pool B TVL, Display block scrubber)
+- Run / Reset controls and presets
+- Fixed parameters note at the bottom.
 
 # Implements FR-10-04, FR-10-05, FR-10-06, NFR-06, SRS §5.1, §12.1
 """
@@ -19,7 +21,7 @@ DEFAULT_SEED = 42
 
 
 def render_sidebar() -> Tuple[bool, SimulationConfig]:
-    """Render sidebar parameter widgets and control buttons.
+    """Render sidebar parameter widgets and control buttons matching the demo UI.
 
     # Implements FR-10-04, FR-10-05, FR-10-06, NFR-06
 
@@ -28,10 +30,7 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
     """
     st.sidebar.markdown(
         """
-        <div style="margin-bottom:0.75rem;">
-            <div style="font-size:1.1rem; font-weight:700; color:#0F172A;">Tham số mô phỏng</div>
-            <div style="font-size:0.8rem; color:#64748B; margin-top:0.2rem;">Khảo sát tác động lây lan qua các khối</div>
-        </div>
+        <div class="sidebar-title">Tham số thí nghiệm</div>
         """,
         unsafe_allow_html=True,
     )
@@ -49,11 +48,13 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
         st.session_state["param_max_blocks"] = DEFAULT_MAX_BLOCKS
     if "param_seed" not in st.session_state:
         st.session_state["param_seed"] = DEFAULT_SEED
+    if "display_block" not in st.session_state:
+        st.session_state["display_block"] = DEFAULT_MAX_BLOCKS
 
-    # Top Action Buttons
-    col_run, col_reset = st.sidebar.columns([1.4, 1])
+    # Action Buttons
+    col_run, col_reset = st.sidebar.columns([1.3, 1])
     with col_run:
-        run_top = st.button("Chạy mô phỏng", type="primary", use_container_width=True, key="btn_run_top")
+        run_top = st.button("Chạy lại", type="primary", use_container_width=True, key="btn_run_top")
     with col_reset:
         if st.button("Mặc định", use_container_width=True, key="btn_reset_top"):
             st.session_state["param_shock_pct"] = DEFAULT_SHOCK_PCT
@@ -62,10 +63,10 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
             st.session_state["param_num_borrowers"] = DEFAULT_NUM_BORROWERS
             st.session_state["param_max_blocks"] = DEFAULT_MAX_BLOCKS
             st.session_state["param_seed"] = DEFAULT_SEED
+            st.session_state["display_block"] = DEFAULT_MAX_BLOCKS
             st.rerun()
 
     # Preset Scenarios
-    st.sidebar.markdown("<div class='sidebar-section-title'>Kịch bản mẫu</div>", unsafe_allow_html=True)
     col_p1, col_p2 = st.sidebar.columns(2)
     with col_p1:
         if st.button("Căng thẳng cao", use_container_width=True, key="preset_crisis", help="Shock 30%, Pool hẹp"):
@@ -80,91 +81,109 @@ def render_sidebar() -> Tuple[bool, SimulationConfig]:
             st.session_state["param_pool_b_tvl"] = 150_000_000.0
             st.rerun()
 
-    st.sidebar.markdown("<div class='sidebar-section-title'>1. Cú sốc giá ban đầu</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='margin-top:0.75rem;'></div>", unsafe_allow_html=True)
 
+    # 1. Shock % Slider
     shock_pct = st.sidebar.slider(
-        label="Cú sốc giá ETH tại Block 1 (%)",
-        min_value=0.0,
-        max_value=50.0,
-        value=float(st.session_state["param_shock_pct"]),
-        step=0.5,
-        format="%.1f%%",
+        label="Cú sốc giảm giá ETH (%)",
+        min_value=0,
+        max_value=50,
+        value=int(round(float(st.session_state["param_shock_pct"]))),
+        step=1,
         help="Mức giảm giá ETH ngoại sinh xảy ra tại Block 1.",
         key="slider_shock_pct",
     )
-    st.session_state["param_shock_pct"] = shock_pct
+    st.session_state["param_shock_pct"] = float(shock_pct)
 
-    st.sidebar.markdown("<div class='sidebar-section-title'>2. Thanh khoản các pool AMM</div>", unsafe_allow_html=True)
-
-    curr_a = float(st.session_state["param_pool_a_tvl"])
-    pool_a_tvl = st.sidebar.slider(
-        label=f"Pool A (ETH/USDC): ${curr_a/1e6:.0f}M",
-        min_value=10_000_000.0,
-        max_value=500_000_000.0,
-        value=curr_a,
-        step=5_000_000.0,
+    # 2. Pool A TVL Slider
+    curr_a_m = int(round(float(st.session_state["param_pool_a_tvl"]) / 1e6))
+    pool_a_m = st.sidebar.slider(
+        label="Độ sâu Pool A ETH/USDC (triệu USD)",
+        min_value=10,
+        max_value=500,
+        value=curr_a_m,
+        step=5,
         help="Độ sâu thanh khoản của AMM Pool A (ETH/USDC).",
         key="slider_pool_a_tvl",
     )
-    st.session_state["param_pool_a_tvl"] = pool_a_tvl
+    st.session_state["param_pool_a_tvl"] = float(pool_a_m * 1e6)
 
-    curr_b = float(st.session_state["param_pool_b_tvl"])
-    pool_b_tvl = st.sidebar.slider(
-        label=f"Pool B (stETH/ETH): ${curr_b/1e6:.0f}M",
-        min_value=5_000_000.0,
-        max_value=200_000_000.0,
-        value=curr_b,
-        step=2_500_000.0,
+    # 3. Pool B TVL Slider
+    curr_b_m = int(round(float(st.session_state["param_pool_b_tvl"]) / 1e6))
+    pool_b_m = st.sidebar.slider(
+        label="Độ sâu Pool B stETH/ETH (triệu USD mỗi phía)",
+        min_value=5,
+        max_value=200,
+        value=curr_b_m,
+        step=5,
         help="Độ sâu thanh khoản của AMM Pool B (stETH/ETH).",
         key="slider_pool_b_tvl",
     )
-    st.session_state["param_pool_b_tvl"] = pool_b_tvl
+    st.session_state["param_pool_b_tvl"] = float(pool_b_m * 1e6)
 
-    st.sidebar.markdown("<div class='sidebar-section-title'>3. Cấu hình mô phỏng</div>", unsafe_allow_html=True)
-
-    num_borrowers = st.sidebar.slider(
-        label="Số lượng người vay (Borrowers)",
-        min_value=10,
-        max_value=500,
-        value=int(st.session_state["param_num_borrowers"]),
-        step=10,
-        help="Quy mô tổng số tác tử vay vốn được khởi tạo ngẫu nhiên.",
-        key="slider_num_borrowers",
-    )
-    st.session_state["param_num_borrowers"] = num_borrowers
-
-    max_blocks = st.sidebar.slider(
-        label="Số block mô phỏng",
-        min_value=5,
-        max_value=100,
-        value=int(st.session_state["param_max_blocks"]),
-        step=5,
-        help="Thời lượng số block mô phỏng diễn tiến phản hồi.",
-        key="slider_max_blocks",
-    )
-    st.session_state["param_max_blocks"] = max_blocks
-
-    seed = st.sidebar.number_input(
-        label="Hạt giống ngẫu nhiên (Seed)",
-        min_value=0,
-        max_value=2_147_483_647,
-        value=int(st.session_state["param_seed"]),
+    # 4. Display Block Scrubber Slider (Matching Demo Image 1)
+    max_blocks_val = int(st.session_state["param_max_blocks"])
+    curr_disp = min(int(st.session_state.get("display_block", max_blocks_val)), max_blocks_val)
+    display_block = st.sidebar.slider(
+        label="Hiển thị đến block",
+        min_value=1,
+        max_value=max_blocks_val,
+        value=curr_disp,
         step=1,
-        help="Hạt giống sinh số ngẫu nhiên đảm bảo tính lặp lại của kết quả.",
-        key="input_seed",
+        help="Tua nhanh hoặc lọc biểu đồ hiển thị đến block chỉ định.",
+        key="slider_display_block",
     )
-    st.session_state["param_seed"] = seed
+    st.session_state["display_block"] = display_block
 
-    run_bottom = st.sidebar.button("Chạy mô phỏng (Run)", type="primary", use_container_width=True, key="btn_run_bottom")
-    run_clicked = run_top or run_bottom
+    # Advanced Settings in Expander
+    with st.sidebar.expander("Tùy chọn nâng cao (Borrowers, Blocks, Seed)"):
+        num_borrowers = st.slider(
+            label="Số lượng người vay (Borrowers)",
+            min_value=10,
+            max_value=500,
+            value=int(st.session_state["param_num_borrowers"]),
+            step=10,
+            key="slider_num_borrowers",
+        )
+        st.session_state["param_num_borrowers"] = num_borrowers
+
+        max_blocks = st.slider(
+            label="Số block mô phỏng",
+            min_value=5,
+            max_value=100,
+            value=max_blocks_val,
+            step=5,
+            key="slider_max_blocks",
+        )
+        st.session_state["param_max_blocks"] = max_blocks
+
+        seed = st.number_input(
+            label="Hạt giống ngẫu nhiên (Seed)",
+            min_value=0,
+            max_value=2_147_483_647,
+            value=int(st.session_state["param_seed"]),
+            step=1,
+            key="input_seed",
+        )
+        st.session_state["param_seed"] = seed
+
+    # Fixed Parameters Note at the bottom (Exact match with Demo screenshot)
+    st.sidebar.markdown(
+        """
+        <div class="sidebar-fixed-note">
+            <strong>Cố định:</strong> 50 Borrower ETH + 50 Borrower stETH, LTV 55% đến 72%, LT 80%, bonus 5%, close factor 50%, discount ban đầu 1%.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     config = SimulationConfig(
-        shock_pct=shock_pct,
-        pool_a_tvl_usd=pool_a_tvl,
-        pool_b_tvl_usd=pool_b_tvl,
+        shock_pct=float(shock_pct),
+        pool_a_tvl_usd=float(pool_a_m * 1e6),
+        pool_b_tvl_usd=float(pool_b_m * 1e6),
         num_borrowers=num_borrowers,
         max_blocks=max_blocks,
         seed=seed,
     )
 
-    return run_clicked, config
+    return run_top, config
