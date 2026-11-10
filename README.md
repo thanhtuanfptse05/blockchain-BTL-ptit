@@ -1,5 +1,12 @@
 # DeFi Liquidation Cascade Simulator
 
+[![CI Pipeline](https://github.com/thanhtuanfptse05/blockchain-BTL-ptit/actions/workflows/ci.yml/badge.svg)](https://github.com/thanhtuanfptse05/blockchain-BTL-ptit/actions)
+![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue)
+![Pytest](https://img.shields.io/badge/Tests-73%20passed%20(100%25)-success)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-red)
+![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-informational)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 **Mô phỏng lây lan rủi ro thanh lý chéo tài sản trong DeFi Lending (Agent-Based Model)**
 
 Dự án Bài tập lớn môn Công nghệ Chuỗi khối (Blockchain Technology).
